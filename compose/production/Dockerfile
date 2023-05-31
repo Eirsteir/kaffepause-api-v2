@@ -10,5 +10,11 @@ COPY ./requirements /requirements
 RUN pip install --no-cache-dir -r /requirements/production.txt \
     && rm -rf /requirements
 
+COPY ./compose/local/django/entrypoint /entrypoint
+RUN sed -i 's/\r$//g' /entrypoint
+RUN chmod +x /entrypoint
+
 # Copy the application code to the working directory
 COPY . /app
+
+ENTRYPOINT ["/entrypoint"]

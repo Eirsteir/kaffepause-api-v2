@@ -1,4 +1,11 @@
 repos:
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        language_version: python3.9
+        args:
+          - --line-length=88
   - repo: https://github.com/myint/autoflake
     rev: v1.4
     hooks:

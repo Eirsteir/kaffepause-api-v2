@@ -1,5 +1,3 @@
-# USE https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker FOR PRODUCTION
-
 # Use the official Python base image
 FROM python:3.9
 
@@ -17,8 +15,12 @@ COPY ./requirements /requirements
 RUN pip install --upgrade pip
 RUN pip install -r /requirements/local.txt
 
-# Copy the application code to the working directory
-COPY ../.. .
+COPY ./compose/local/entrypoint /entrypoint
+RUN sed -i 's/\r$//g' /entrypoint
+RUN chmod +x /entrypoint
 
-# Set the command to run the application with live reload
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+COPY ./compose/local/start /start
+RUN sed -i 's/\r$//g' /start
+RUN chmod +x /start
+
+ENTRYPOINT ["/entrypoint"]

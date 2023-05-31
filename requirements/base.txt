@@ -1,7 +1,9 @@
-fastapi==0.68.0
-uvicorn==0.12.2
+fastapi==0.95.2
+uvicorn==0.22.0
 websockets==11.0.3
 
 starlette-graphene3==0.6.0
 graphene-file-upload==1.3.0
-pydantic[dotenv]==1.10
+pydantic[dotenv]==1.10.8
+
+neomodel==5.0.0
