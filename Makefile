@@ -1,15 +1,11 @@
-all:
-
 # docker
 start:
-	@echo "bringing up project...."
 	docker compose up
 
 fresh:
-	@echo "bringing down project...."
 	docker compose down -v
-    docker-compose build
-    start
+	docker-compose build
+	make start
 
 bash:
 	@echo "connecting to container...."

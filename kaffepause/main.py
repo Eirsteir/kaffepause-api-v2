@@ -2,9 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette_graphene3 import GraphQLApp, make_graphiql_handler
 
-from app.core.config import settings
-from app.database import lifespan
-from app.schema import schema
+from kaffepause.api.schema import schema
+from kaffepause.core.config import settings
+from kaffepause.database import lifespan
 
 
 def get_application():

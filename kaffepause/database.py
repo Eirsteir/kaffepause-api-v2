@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from neomodel import config
 
-from app.core.config import settings
+from kaffepause.core.config import settings
 
 
 @asynccontextmanager

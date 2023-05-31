@@ -8,6 +8,9 @@ from pydantic import AnyHttpUrl, BaseSettings, HttpUrl, validator
 class Settings(BaseSettings):
     PROJECT_NAME: str
     DEBUG: bool = False
+    TIME_ZONE: str = "Europe/Oslo"
+    WEBSITE_URL: str = "https://kaffepause.eiriksteira.com"
+
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
