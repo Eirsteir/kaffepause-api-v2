@@ -10,10 +10,10 @@ from app.schema import schema
 def get_application():
     _app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
-    _app.mount("/graphql/", GraphQLApp(schema,
-               on_get=make_graphiql_handler()))  # Graphiql IDE
-
-    # app.mount("/", GraphQLApp(schema)) # no IDE
+    if settings.DEBUG:
+        _app.mount("/graphql/", GraphQLApp(schema, on_get=make_graphiql_handler()))
+    else:
+        app.mount("/", GraphQLApp(schema))
 
     _app.add_middleware(
         CORSMiddleware,

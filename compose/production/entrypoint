@@ -24,7 +24,7 @@ END
 }
 until neo4j_ready; do
   >&2 echo 'Waiting for Neo4j to become available...'
-  sleep 1
+  sleep 2
 done
 >&2 echo 'Neo4j is available'
 

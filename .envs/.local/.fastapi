@@ -1,3 +1,4 @@
+DEBUG=True
 PROJECT_NAME=kaffepause-api
 BACKEND_CORS_ORIGINS=["http://localhost:8000", "https://localhost:8000", "http://localhost", "https://localhost"]
 
@@ -5,3 +6,5 @@ NEO4J_USER=neo4j
 NEO4J_PASSWORD=kaffepauseadmin
 NEO4J_HOST=neo4j
 NEO4J_PORT=7687
+
+JWT_SECRET_KEY="CKKsPkhIybHLZyajCv2UZeGK/j+5w1oyWVhiY7I6kRY="
