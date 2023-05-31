@@ -1,16 +1,33 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
-from sqlalchemy.orm import sessionmaker
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from neomodel import config, db
 
 from app.core.config import settings
 
-engine = create_engine(settings.DATABASE_URI, pool_pre_ping=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+config.DATABASE_URL = settings.NEO4J_CONNECTION_URL
 
 
-@as_declarative()
-class Base:
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    await initialize_neomodel()
+    yield
 
-    @declared_attr
-    def __tablename__(cls) -> str:
-        return cls.__name__.lower()
+
+async def initialize_neomodel():
+    # Initialize the Neo4j connection
+    config.AUTO_INSTALL_LABELS = True
+    config.AUTO_INSTALL_PROPERTIES = True
+    config.FORCE_REFRESH_ENTITIES = True
+    config.AUTO_INSTALL_RELATIONSHIPS = True
+    config.AUTO_CREATE_RELATIONSHIP_TYPE = True
+    config.AUTO_CREATE_SCHEMA = True
+    config.AUTO_INDEX_SCHEMAS = True
+    config.USE_ARRAY_FIELD = True
+    config.AUTO_SAVE_ENABLED = True
+
+    await db.set_connection(config.DATABASE_URL)
+    await db.set_connection(config.DATABASE_URL + '/' + settings.NEO4J_DATABASE_NAME)
+
+    # Verify the connection
+    db.cypher_query("MATCH (n) RETURN n LIMIT 1")

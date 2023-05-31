@@ -3,11 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette_graphene3 import GraphQLApp, make_graphiql_handler
 
 from app.core.config import settings
+from app.database import lifespan
 from app.schema import schema
 
 
 def get_application():
-    _app = FastAPI(title=settings.PROJECT_NAME)
+    _app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
     _app.mount("/graphql/", GraphQLApp(schema,
                on_get=make_graphiql_handler()))  # Graphiql IDE
