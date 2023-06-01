@@ -20,7 +20,7 @@ class SendFriendRequest(LoginRequiredMixin, Output, graphene.Mutation):
 
     @classmethod
     def resolve_mutation(cls, root, info, to_friend):
-        current_user = info.context.user
+        current_user = info.context["user"]
         to_friend = get_user(uuid=to_friend)
         send_friend_request(actor=current_user, to_user=to_friend)
 
@@ -35,7 +35,7 @@ class CancelFriendRequest(LoginRequiredMixin, Output, graphene.Mutation):
 
     @classmethod
     def resolve_mutation(cls, root, info, to_friend):
-        current_user = info.context.user
+        current_user = info.context["user"]
         to_friend = get_user(uuid=to_friend)
         cancel_friend_request(actor=current_user, to_user=to_friend)
 
@@ -50,7 +50,7 @@ class UnfriendUser(LoginRequiredMixin, Output, graphene.Mutation):
 
     @classmethod
     def resolve_mutation(cls, root, info, friend):
-        current_user = info.context.user
+        current_user = info.context["user"]
         friend = get_user(uuid=friend)
         unfriend_user(actor=current_user, friend=friend)
 
@@ -65,7 +65,7 @@ class AcceptFriendRequest(LoginRequiredMixin, Output, graphene.Mutation):
 
     @classmethod
     def resolve_mutation(cls, root, info, requester):
-        current_user = info.context.user
+        current_user = info.context["user"]
         requester = get_user(uuid=requester)
         accept_friend_request(actor=current_user, requester=requester)
 
@@ -80,7 +80,7 @@ class RejectFriendRequest(LoginRequiredMixin, Output, graphene.Mutation):
 
     @classmethod
     def resolve_mutation(cls, root, info, requester):
-        current_user = info.context.user
+        current_user = info.context["user"]
         requester = get_user(uuid=requester)
         reject_friend_request(actor=current_user, requester=requester)
 

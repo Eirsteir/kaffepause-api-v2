@@ -25,7 +25,11 @@ services:
       - 7474
       - 7687
     volumes:
-      - local_neo4j_data:/data
+      - ./neo4j/conf:/conf
+      - ./neo4j/data:/data
+      - ./neo4j/import:/import
+      - ./neo4j/logs:/logs
+      - ./neo4j/plugins:/plugins
     env_file:
       - ./.envs/.local/.neo4j
 

@@ -1,8 +1,7 @@
-DEBUG=True
-PROJECT_NAME=kaffepause-api
+APP_ENV=DEVELOPMENT
 WEBSITE_URL=http://localhost:3000
+BACKEND_CORS_ORIGINS=["http://localhost:3000", "https://localhost:3000", "http://localhost", "https://localhost"]
 
-BACKEND_CORS_ORIGINS=["http://localhost:8000", "https://localhost:8000", "http://localhost", "https://localhost"]
 NEO4J_USER=neo4j
 NEO4J_PASSWORD=kaffepauseadmin
 NEO4J_HOST=neo4j

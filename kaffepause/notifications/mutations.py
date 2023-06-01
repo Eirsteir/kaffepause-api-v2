@@ -10,6 +10,6 @@ class MarkAllAsSeen(LoginRequiredMixin, Output, graphene.Mutation):
 
     @classmethod
     def resolve_mutation(cls, root, info):
-        current_user = info.context.user
+        current_user = info.context["user"]
         mark_all_as_seen(user=current_user)
         return cls(notification_badge_count=current_user, success=True)

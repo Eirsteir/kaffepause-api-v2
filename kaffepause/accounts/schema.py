@@ -9,7 +9,7 @@ class AccountQuery(graphene.ObjectType):
 
     @login_required
     def resolve_my_accounts(root, info):
-        return info.context.user.account.all()
+        return info.context["user"].account.all()
 
 
 class Query(AccountQuery, graphene.ObjectType):

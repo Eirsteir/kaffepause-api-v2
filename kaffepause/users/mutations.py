@@ -4,6 +4,7 @@ import graphene
 from graphene_file_upload.scalars import Upload
 
 from kaffepause.common.bases import LoginRequiredMixin, Output
+from kaffepause.location.exceptions import LocationDoesNotExist
 from kaffepause.location.models import Location
 from kaffepause.location.types import LocationNode
 from kaffepause.users.services import change_profile_picture, update_preferred_location
@@ -21,7 +22,7 @@ class ChangeProfilePicture(LoginRequiredMixin, Output, graphene.Mutation):
 
     @classmethod
     def resolve_mutation(cls, root, info, profile_pic, **kwargs):
-        current_user = info.context.user
+        current_user = info.context["user"]
 
         result = change_profile_picture(
             uploaded_by=current_user, profile_picture=profile_pic
@@ -38,16 +39,17 @@ class UpdatePreferredLocation(LoginRequiredMixin, Output, graphene.Mutation):
 
     @classmethod
     def resolve_mutation(cls, root, info, location_uuid, **kwargs):
-        current_user = info.context.user
+        current_user = info.context["user"]
 
         try:
             user = update_preferred_location(
                 user=current_user, location_uuid=location_uuid
             )
             logger.debug(
-                f"Successfully updated users preferred location (uuid:{user.uuid}, location_uuid: {location_uuid})"
+                f"Successfully updated users preferred location "
+                f"(uuid:{user.uuid}, location_uuid: {location_uuid})"
             )
-        except Location.DoesNotExist as e:
-            return cls(success=False, errors=["Dette stedet eksisterer ikke"])
+        except Location.DoesNotExist:
+            raise LocationDoesNotExist
 
         return cls(success=True, user=user)

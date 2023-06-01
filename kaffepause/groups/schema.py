@@ -17,12 +17,12 @@ class Query(graphene.ObjectType):
 
     @login_required
     def resolve_my_groups(self, info, **kwargs):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return get_groups_for(user=current_user)
 
     @login_required
     def resolve_group(self, info, uuid, **kwargs):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return get_group(actor=current_user, uuid=uuid)
 
 

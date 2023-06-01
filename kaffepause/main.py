@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette_graphene3 import GraphQLApp, make_graphiql_handler
 
-from kaffepause.api.schema import schema
+from kaffepause.api.graphql_app import graphql_app
 from kaffepause.core.config import settings
-from kaffepause.database import lifespan
+from kaffepause.core.database import lifespan
 
 
 def get_application():
@@ -15,10 +14,7 @@ def get_application():
         debug=settings.DEBUG,
     )
 
-    if settings.DEBUG:
-        _app.mount("/graphql", GraphQLApp(schema, on_get=make_graphiql_handler()))
-    else:
-        app.mount("/graphql/", GraphQLApp(schema))
+    _app.mount("/graphql", graphql_app)
 
     _app.add_middleware(
         CORSMiddleware,
@@ -30,13 +26,5 @@ def get_application():
 
     return _app
 
-
-if settings.DEBUG:
-    import sentry_sdk
-
-    sentry_sdk.init(
-        dsn=settings.SENTRY_DSN,
-        traces_sample_rate=1.0,
-    )
 
 app = get_application()

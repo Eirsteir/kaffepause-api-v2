@@ -17,11 +17,11 @@ class NotificationQuery(graphene.ObjectType):
     @login_required
     def resolve_notifications(self, info, **kwargs):
         # TODO: pagination
-        return get_notifications_for(actor=info.context.user)
+        return get_notifications_for(actor=info.context["user"])
 
     @login_required
     def resolve_notification_badge_count(self, info, **kwargs):
-        return info.context.user
+        return info.context["user"]
 
 
 class Query(NotificationQuery, graphene.ObjectType):

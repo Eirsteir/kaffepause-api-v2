@@ -24,17 +24,17 @@ class Query(graphene.ObjectType):
 
     @login_required
     def resolve_friending_possibilities(self, info, **kwargs):
-        user = info.context.user
+        user = info.context["user"]
         return get_incoming_requests(user)
 
     @login_required
     def resolve_outgoing_friend_requests(self, info, **kwargs):
-        user = info.context.user
+        user = info.context["user"]
         return get_outgoing_requests(user)
 
     @login_required
     def resolve_friend_recommendations(self, info, **kwargs):
-        user = info.context.user
+        user = info.context["user"]
         return get_friend_recommendations(user, limit=10)
 
 

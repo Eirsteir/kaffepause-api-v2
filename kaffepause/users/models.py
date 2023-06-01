@@ -11,6 +11,7 @@ from neomodel import (
 )
 
 from kaffepause.authentication.enums import AccountRelationship
+from kaffepause.authentication.models import BaseUser
 from kaffepause.breaks.enums import BreakRelationship
 from kaffepause.common.enums import (
     ACCOUNT,
@@ -29,23 +30,15 @@ from kaffepause.relationships.enums import UserRelationship
 from kaffepause.relationships.models import FriendRel, RelationshipRel
 
 
-class AuthenticationMixin:
-    # https://docs.djangoproject.com/en/4.2/ref/contrib/auth/#attributes
-    is_active = True
-    is_authenticated = True
-    is_anonymous = False
-    USERNAME_FIELD = "email"
-
-    account = RelationshipTo(ACCOUNT, AccountRelationship.HAS_ACCOUNT)
-    sessions = RelationshipTo(SESSION, AccountRelationship.HAS_SESSION)
-
-
-class User(StructuredNode, AuthenticationMixin):
+class User(StructuredNode, BaseUser):
     uuid = UniqueIdProperty(db_property="id")  # Neomodel overrides field id
     name = StringProperty(required=True, index=True)
     email = StringProperty(unique_index=True, required=True)
     emailVerified = DateTimeProperty()
     image = StringProperty()
+
+    account = RelationshipTo(ACCOUNT, AccountRelationship.HAS_ACCOUNT)
+    sessions = RelationshipTo(SESSION, AccountRelationship.HAS_SESSION)
 
     friends = Relationship(USER, UserRelationship.ARE_FRIENDS, model=FriendRel)
 
@@ -91,6 +84,10 @@ class User(StructuredNode, AuthenticationMixin):
     class Meta:
         app_label = "users"
 
+    @property
+    def identity(self) -> str:
+        return str(self.uuid)
+
     @classmethod
     def get_or_create(cls, object_, *props, **kwargs):
         return super().get_or_create({**object_.__dict__}, **kwargs)
@@ -127,7 +124,10 @@ class User(StructuredNode, AuthenticationMixin):
         return self.friends.disconnect(friend)
 
     def can_perform_action_on_friend(self, friend):
-        """A user can perform an arbitrary action on another if they are friends and the friend is not itself."""
+        """
+        A user can perform an arbitrary action on another
+        if they are friends and the friend is not itself.
+        """
         return self.friends.is_connected(friend) and friend is not self
 
     def get_current_status(self):

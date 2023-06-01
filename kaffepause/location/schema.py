@@ -12,7 +12,7 @@ class LocationQuery(graphene.ObjectType):
 
     @login_required
     def resolve_locations(self, info, **kwargs):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return get_campus_locations(actor=current_user, **kwargs)
 
 

@@ -34,30 +34,30 @@ class Query(graphene.ObjectType):
 
     @login_required
     def resolve_breaks_presentation(self, info, **kwargs):
-        return info.context.user
+        return info.context["user"]
 
     @login_required
     def resolve_break_invitations_presentation(self, info, **kwargs):
-        return info.context.user
+        return info.context["user"]
 
     @login_required
     def resolve_next_break(self, info, **kwargs):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return get_next_break(actor=current_user)
 
     @login_required
     def resolve_break_(self, info, uuid, **kwargs):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return get_break(actor=current_user, uuid=uuid)
 
     @login_required
     def resolve_pending_break_invitations(self, info, **kwargs):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return get_pending_break_invitations(actor=current_user)
 
     @login_required
     def resolve_break_history(self, info, **kwargs):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return get_break_history(actor=current_user)
 
 

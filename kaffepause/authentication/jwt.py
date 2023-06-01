@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timedelta
+from typing import Optional
 
 from jose import JWTError, jwt
 
@@ -24,7 +25,7 @@ def get_username_from_user(payload):
 
 
 def get_http_authorization(request):
-    auth = request.META.get(settings.JWT_AUTH_HEADER_NAME, "").split()
+    auth = request.headers.get(settings.JWT_AUTH_HEADER_NAME, "").split()
     prefix = settings.JWT_AUTH_HEADER_PREFIX
     if len(auth) != 2 or auth[0].lower() != prefix.lower():
         return None
@@ -43,8 +44,8 @@ def get_user_by_token(token, context=None):
 def get_payload(token, context=None):
     try:
         payload = decode_jwt(token, context)
-    except JWTError:
-        raise JWTError("Error decoding token")
+    except JWTError as e:
+        raise JWTError("Error decoding token") from e
     return payload
 
 
@@ -71,13 +72,13 @@ def encode_jwt(token):
     return jwt.encode(token, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
 
-def create_access_token(user: User, expires_delta: timedelta = None):
+def create_access_token(user: User, expires_delta: Optional[timedelta] = None):
     to_encode = jwt_payload(user, expires_delta)
     encoded_jwt = encode_jwt(to_encode)
     return encoded_jwt
 
 
-def jwt_payload(user: User, expires_delta: timedelta = None):
+def jwt_payload(user: User, expires_delta: Optional[timedelta] = None):
     username = user.get_username()
 
     if expires_delta:
@@ -85,7 +86,11 @@ def jwt_payload(user: User, expires_delta: timedelta = None):
     else:
         expire = datetime.utcnow() + settings.JWT_EXPIRATION_DELTA
 
-    payload = {user.USERNAME_FIELD: username, "exp": expire, "user_id": str(user.id)}
+    payload = {
+        user.USERNAME_FIELD: username,
+        "exp": expire,
+        "user_id": str(user.identity),
+    }
 
     # if jwt_settings.JWT_ALLOW_REFRESH:
     #     payload['origIat'] = timegm(datetime.utcnow().utctimetuple())

@@ -17,9 +17,10 @@ class AddUserLocation(LoginRequiredMixin, Output, graphene.Mutation):
 
     @classmethod
     def resolve_mutation(cls, root, info, title):
-        user = info.context.user
+        user = info.context["user"]
         location = add_user_location(user=user, title=title)
         logger.debug(
-            f"Successfully added user location (uuid:{location.uuid}, user_uuid:{user.uuid})"
+            f"Successfully added user location "
+            f"(uuid:{location.uuid}, user_uuid:{user.uuid})"
         )
         return cls(success=True, location=location)

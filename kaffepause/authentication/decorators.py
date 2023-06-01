@@ -22,7 +22,7 @@ def user_passes_test(test_func, exc=PermissionDenied()):
         @wraps(f)
         @context(f)
         def wrapper(context, *args, **kwargs):
-            if test_func(context.user):
+            if test_func(context.get("user")):
                 return f(*args, **kwargs)
             raise exc
 
@@ -31,6 +31,4 @@ def user_passes_test(test_func, exc=PermissionDenied()):
     return decorator
 
 
-login_required = user_passes_test(
-    lambda u: u.is_authenticated
-)  # TODO: what happens when we dont have AnonymousUser?
+login_required = user_passes_test(lambda u: u.is_authenticated)

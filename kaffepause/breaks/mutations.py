@@ -31,7 +31,7 @@ class InitiateBreak(LoginRequiredMixin, Output, graphene.Mutation):
         start_time=None,
         location=None,
     ):
-        current_user = info.context.user
+        current_user = info.context["user"]
         break_ = create_break_and_invitation(
             actor=current_user,
             recipient_user_ids=addressees,
@@ -53,7 +53,7 @@ class BreakInvitationAction(LoginRequiredMixin, Output, graphene.Mutation):
     @classmethod
     def resolve_mutation(cls, root, info, invitation):
         invitation = BreakInvitation.nodes.get(uuid=invitation)
-        current_user = info.context.user
+        current_user = info.context["user"]
         invitation = cls._invitation_action(actor=current_user, invitation=invitation)
         return cls(invitation=invitation, success=True)
 
@@ -82,7 +82,7 @@ class RequestChange(LoginRequiredMixin, Output, graphene.Mutation):
     def resolve_mutation(
         cls, root, info, break_uuid, requested_time=None, requested_location_uuid=None
     ):
-        current_user = info.context.user
+        current_user = info.context["user"]
 
         break_ = request_change(
             actor=current_user,

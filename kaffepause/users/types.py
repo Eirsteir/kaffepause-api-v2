@@ -36,12 +36,12 @@ class UserNode(graphene.ObjectType):
         return parent.short_name
 
     def resolve_is_viewer_friend(parent, info):
-        current_user = info.context.user
+        current_user = info.context["user"]
         subject = get_user(uuid=parent.uuid)
         return current_user.is_friends_with(user=subject)
 
     def resolve_friendship_status(parent, info):
-        current_user = info.context.user
+        current_user = info.context["user"]
         subject = get_user(uuid=parent.uuid)
         return get_friendship_status(actor=current_user, user=subject)
 
@@ -49,7 +49,7 @@ class UserNode(graphene.ObjectType):
         return get_friends(parent)
 
     def resolve_social_context(parent, info):
-        current_user = info.context.user
+        current_user = info.context["user"]
         subject = get_user(uuid=parent.uuid)
         return get_social_context_between(actor=current_user, other=subject)
 

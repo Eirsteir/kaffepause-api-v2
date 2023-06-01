@@ -65,7 +65,7 @@ class BreakInvitationNode(graphene.ObjectType):
         return parent.get_subject()
 
     def resolve_context(parent, info):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return get_invitation_context(actor=current_user, invitation=parent)
 
 
@@ -89,7 +89,7 @@ class BreakNode(graphene.ObjectType):
     change_requests = graphene.List(lambda: ChangeRequestNode)
 
     def resolve_title(parent, info):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return get_break_title(actor=current_user, break_=parent)
 
     def resolve_invitation(parent, info):
@@ -102,11 +102,11 @@ class BreakNode(graphene.ObjectType):
         return parent.get_location()
 
     def resolve_is_viewer_initiator(parent, info):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return current_user.is_initiator_of(break_=parent)
 
     def resolve_can_viewer_edit_break(parent, info):
-        current_user = info.context.user
+        current_user = info.context["user"]
         return can_user_edit_break(user=current_user, break_=parent)
 
     def resolve_initiator(parent, info):
