@@ -8,12 +8,17 @@ from kaffepause.database import lifespan
 
 
 def get_application():
-    _app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
+    _app = FastAPI(
+        title=settings.PROJECT_NAME,
+        lifespan=lifespan,
+        open_api_url=None,
+        debug=settings.DEBUG,
+    )
 
     if settings.DEBUG:
-        _app.mount("/graphql/", GraphQLApp(schema, on_get=make_graphiql_handler()))
+        _app.mount("/graphql", GraphQLApp(schema, on_get=make_graphiql_handler()))
     else:
-        app.mount("/", GraphQLApp(schema))
+        app.mount("/graphql/", GraphQLApp(schema))
 
     _app.add_middleware(
         CORSMiddleware,
@@ -25,5 +30,13 @@ def get_application():
 
     return _app
 
+
+if settings.DEBUG:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        traces_sample_rate=1.0,
+    )
 
 app = get_application()

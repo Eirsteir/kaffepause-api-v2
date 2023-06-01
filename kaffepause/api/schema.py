@@ -1,7 +1,6 @@
 import graphene
 
 import kaffepause.accounts.schema
-import kaffepause.authentication.schema
 import kaffepause.breaks.schema
 import kaffepause.groups.schema
 import kaffepause.location.schema
@@ -24,7 +23,6 @@ class Query(
 
 
 class Mutation(
-    kaffepause.authentication.schema.Mutation,
     kaffepause.users.schema.Mutation,
     kaffepause.relationships.schema.Mutation,
     kaffepause.breaks.schema.Mutation,
