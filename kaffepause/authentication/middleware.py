@@ -16,13 +16,11 @@ class JSONWebTokenMiddleware:
 
     def resolve(self, next, root, info, **kwargs):
         context = info.context
-        print("CONTEXT", context)
         request = context["request"]
 
         if _authenticate(context):
             user = self.backend.authenticate(request=request, **kwargs)
-            print("USER", user)
             if user is not None:
-                context.user = user
+                context["user"] = user
 
         return next(root, info, **kwargs)
