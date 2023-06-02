@@ -14,6 +14,6 @@ RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 
 # Copy the application code to the working directory
-COPY . /app
+COPY ./kaffepause /app
 
 ENTRYPOINT ["/entrypoint"]
