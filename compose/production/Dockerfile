@@ -2,7 +2,6 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Copy the requirements file to the working directory
@@ -10,7 +9,7 @@ COPY ./requirements /requirements
 RUN pip install --no-cache-dir -r /requirements/production.txt \
     && rm -rf /requirements
 
-COPY ./compose/local/django/entrypoint /entrypoint
+COPY ./compose/production/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 
