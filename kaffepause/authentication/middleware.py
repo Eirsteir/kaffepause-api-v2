@@ -9,7 +9,6 @@ def _authenticate(context):
     )
 
 
-# from graphql_jwt.middleware import JSONWebTokenMiddleware
 class JSONWebTokenMiddleware:
     def __init__(self):
         self.backend = JSONWebTokenBackend()

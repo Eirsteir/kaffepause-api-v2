@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from uuid import UUID
 
@@ -63,15 +64,22 @@ def get_next_break(actor: User) -> Break:
 
 
 def get_break(actor: User, uuid: UUID) -> Break:
-    """Return the break if actor has participated or has been invited (either individually or through group) or
-    initiated to the requested break."""
+    """
+    Return the break if actor has participated
+    or has been invited (either individually or through group) or
+    initiated to the requested break.
+    """
     query = f"""
     MATCH
         (b:Break {{uuid: $break_uuid}}),
         (u:User {{uuid: $user_uuid}})
-    WHERE (u)-[:{BreakRelationship.PARTICIPATED_IN} | :{BreakRelationship.INITIATED}]->(b)
-        OR (u)-[:{BreakRelationship.SENT} | :{BreakRelationship.TO_USER}]-(:BreakInvitation)-[:{BreakRelationship.REGARDING}]->(b)
-        OR (u)<-[:{GroupRelationship.HAS_MEMBER}]-(:Group)-[:{BreakRelationship.TO_GROUP}]-(:BreakInvitation)-[:{BreakRelationship.REGARDING}]->(b)
+    WHERE (u)-[:{BreakRelationship.PARTICIPATED_IN}
+                | :{BreakRelationship.INITIATED}]->(b)
+        OR (u)-[:{BreakRelationship.SENT} | :{BreakRelationship.TO_USER}]
+                -(:BreakInvitation)-[:{BreakRelationship.REGARDING}]->(b)
+        OR (u)<-[:{GroupRelationship.HAS_MEMBER}]
+                -(:Group)-[:{BreakRelationship.TO_GROUP}]
+                -(:BreakInvitation)-[:{BreakRelationship.REGARDING}]->(b)
     RETURN b
     """
     params = dict(break_uuid=str(uuid), user_uuid=str(actor.uuid))
@@ -86,7 +94,8 @@ def get_break(actor: User, uuid: UUID) -> Break:
 def get_all_break_invitations(actor: User) -> List[BreakInvitation]:
     query = f"""
         MATCH (user:User {{uuid: $user_uuid}})
-        MATCH (user)<-[:{GroupRelationship.HAS_MEMBER}]-(group:Group)<-[:{BreakRelationship.TO_GROUP}]-(invitation:BreakInvitation)
+        MATCH (user)<-[:{GroupRelationship.HAS_MEMBER}]-(group:Group)
+        <-[:{BreakRelationship.TO_GROUP}]-(invitation:BreakInvitation)
         WITH invitation
         MATCH (invitation)-[:{BreakRelationship.REGARDING}]->(break:Break)
         RETURN invitation, break.starting_at
@@ -132,10 +141,14 @@ def _get_unanswered_invitations_query() -> str:
     query = f"""
     MATCH (invitation:BreakInvitation)-[:{BreakRelationship.REGARDING}]->(break_:Break),
         (user:User {{uuid: $user_uuid}})
-    WHERE NOT (user)-[:{BreakRelationship.ACCEPTED} | {BreakRelationship.DECLINED} | {BreakRelationship.IGNORED}]->(invitation)
+    WHERE NOT (user)-[:{BreakRelationship.ACCEPTED}
+                        | {BreakRelationship.DECLINED}
+                        | {BreakRelationship.IGNORED}]
+                    ->(invitation)
         AND (
             (invitation)-[:{BreakRelationship.TO_USER}]->(user)
-            OR (invitation)-[:{BreakRelationship.TO_GROUP}]->(:Group)-[:{GroupRelationship.HAS_MEMBER}]->(user)
+            OR (invitation)-[:{BreakRelationship.TO_GROUP}]
+            ->(:Group)-[:{GroupRelationship.HAS_MEMBER}]->(user)
         )
     """
     return query
@@ -190,15 +203,15 @@ def get_invitation_addressees_annotated(invitation):
         user_data = {"user": addressee}
         if invitation.confirmed.is_connected(addressee):
             user_data["rsvp"] = "ACCEPTED"
-            user_data["rsvpTitle"] = _("Godtatt")
+            user_data["rsvpTitle"] = "Godtatt"
         elif invitation.decliners.is_connected(addressee):
             user_data["rsvp"] = "DECLINED"
-            user_data["rsvpTitle"] = _("Avslått")
+            user_data["rsvpTitle"] = "Avslått"
         elif invitation.non_attenders.is_connected(addressee):
             user_data["rsvp"] = "IGNORED"
-            user_data["rsvpTitle"] = _("Ikke svart")
+            user_data["rsvpTitle"] = "Ikke svart"
         else:
             user_data["rsvp"] = "NOT_RESPONDED"
-            user_data["rsvpTitle"] = _("Ikke svart")
+            user_data["rsvpTitle"] = "Ikke svart"
         response_data.append(user_data)
     return response_data
