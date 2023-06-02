@@ -40,8 +40,7 @@ class AppBaseSettings(BaseSettings):
     # JWT
     # ------------------------------------------------------------------------------
     JWT_AUTH_HEADER_NAME: str = "Authorization"
-    JWT_AUTH_HEADER_PREFIX: str = "JWT"
-    JWT_COOKIE_NAME: str = "JWT"
+    JWT_AUTH_HEADER_PREFIX: str = "Bearer"
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION_DELTA: timedelta = timedelta(days=30)
