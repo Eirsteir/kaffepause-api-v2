@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from neomodel import (
     DateTimeProperty,
     One,
@@ -27,16 +25,12 @@ from kaffepause.common.enums import (
 )
 from kaffepause.common.models import TimeStampedNode, TimeStampedRel
 from kaffepause.common.properties import UUIDProperty
-from kaffepause.common.utils import (
-    fifteen_minutes_from_now,
-    format_kicker_message,
-    time_from_now,
-)
+from kaffepause.common.utils import format_kicker_message, now, time_from_now
 
 
 class Break(StructuredNode):
     uuid = UUIDProperty()
-    starting_at = DateTimeProperty(default=lambda: fifteen_minutes_from_now())
+    starting_at = DateTimeProperty(required=True)
     participants = RelationshipFrom(USER, BreakRelationship.PARTICIPATED_IN)
     initiator = RelationshipFrom(USER, BreakRelationship.INITIATED)
     invitation = RelationshipFrom(BREAK_INVITATION, BreakRelationship.REGARDING)
@@ -54,7 +48,8 @@ class Break(StructuredNode):
 
     def clean(self, *props, **kwargs):
         start_time = self.get("starting_at")
-        if datetime.utcnow() >= start_time or not start_time:
+        print(now(), start_time)
+        if now() >= start_time or not start_time:
             raise InvalidBreakStartTime
         elif time_from_now(minutes=5) >= start_time:
             raise InvalidBreakStartTime("Pausen må begynne om minimum 5 minutter.")
@@ -65,11 +60,11 @@ class Break(StructuredNode):
 
     @property
     def has_passed(self):
-        return datetime.utcnow() >= self.starting_at
+        return now() >= self.starting_at
 
     @property
     def kicker(self):
-        if self.starting_at > datetime.utcnow():
+        if self.starting_at > now():
             return format_kicker_message(self.starting_at)
         return "Utgått"
 
@@ -93,7 +88,7 @@ class Break(StructuredNode):
 
 class BreakInvitation(StructuredNode):
     uuid = UUIDProperty()
-    created = DateTimeProperty(default=lambda: datetime.utcnow())
+    created = DateTimeProperty()
     sender = RelationshipFrom(USER, BreakRelationship.SENT, cardinality=One)
     addressees = RelationshipTo(USER, BreakRelationship.TO_USER, cardinality=ZeroOrMore)
     recipient_group = RelationshipTo(

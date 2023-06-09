@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List
 from uuid import UUID
 
@@ -7,6 +6,7 @@ from neomodel import db
 from kaffepause.breaks.enums import BreakRelationship, InvitationReplyStatus
 from kaffepause.breaks.exceptions import BreakNotFound
 from kaffepause.breaks.models import Break, BreakInvitation
+from kaffepause.common.utils import now
 from kaffepause.groups.enums import GroupRelationship
 from kaffepause.users.models import User
 
@@ -60,7 +60,7 @@ def is_invited_and_has_not_replied(actor, break_):
 
 def get_next_break(actor: User) -> Break:
     """Return the next break in time where actor is a participant."""
-    return actor.breaks.filter(starting_at__gt=datetime.utcnow()).first_or_none()
+    return actor.breaks.filter(starting_at__gt=now()).first_or_none()
 
 
 def get_break(actor: User, uuid: UUID) -> Break:
@@ -167,11 +167,11 @@ def _run_break_invitation_query(query: str, actor: User) -> List[BreakInvitation
 
 
 def get_upcoming_breaks(actor: User) -> List[Break]:
-    return actor.breaks.filter(starting_at__gt=datetime.utcnow())
+    return actor.breaks.filter(starting_at__gt=now())
 
 
 def get_break_history(actor: User) -> List[Break]:
-    return actor.breaks.filter(starting_at__lt=datetime.utcnow())
+    return actor.breaks.filter(starting_at__lt=now())
 
 
 def get_invitation_context(actor: User, invitation: BreakInvitation):

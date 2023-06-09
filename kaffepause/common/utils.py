@@ -5,6 +5,10 @@ import pytz
 from kaffepause.core.config import settings
 
 
+def now():
+    return time_from_now()
+
+
 def fifteen_minutes_from_now():
     return time_from_now(minutes=15)
 
@@ -22,7 +26,7 @@ def format_time_from_now(
     target_time,
 ) -> str:  # TODO: håndter enkelte timer (time) og minutter (minutt)
     # Calculate the difference between the target time and the current time
-    time_diff = target_time - datetime.utcnow()
+    time_diff = target_time - now()
     # Extract the number of hours and minutes from the time difference
     hours = int(time_diff.total_seconds() // 3600)
     minutes = int((time_diff.total_seconds() % 3600) // 60)
@@ -43,9 +47,11 @@ def time_from_now(hours=0, minutes=0):
     Returns the time from now.
     If now plus given time is in the past, it wraps around to the next day.
     """
-    now = datetime.utcnow()
+    # Must use timezone aware datetime
+    # becuase of neomodels implementation of DateTimeField
+    now = datetime.now(pytz.utc)
     start = now + timedelta(hours=hours, minutes=minutes)
-    return start if start > now else start + timedelta(days=1)
+    return start if start >= now else start + timedelta(days=1)
 
 
 def localize_datetime(dt, tz: str = settings.TIME_ZONE) -> datetime:

@@ -82,9 +82,9 @@ def jwt_payload(user: User, expires_delta: Optional[timedelta] = None):
     username = user.get_username()
 
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now() + expires_delta
     else:
-        expire = datetime.utcnow() + settings.JWT_EXPIRATION_DELTA
+        expire = datetime.now() + settings.JWT_EXPIRATION_DELTA
 
     payload = {
         user.USERNAME_FIELD: username,
@@ -93,6 +93,6 @@ def jwt_payload(user: User, expires_delta: Optional[timedelta] = None):
     }
 
     # if jwt_settings.JWT_ALLOW_REFRESH:
-    #     payload['origIat'] = timegm(datetime.utcnow().utctimetuple())
+    #     payload['origIat'] = timegm(datetime.now().utctimetuple())
 
     return payload
