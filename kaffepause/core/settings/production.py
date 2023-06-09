@@ -22,6 +22,7 @@ class ProductionSettings(AppBaseSettings):
     def init_sentry(cls, v: str) -> Optional[str]:
         sentry_sdk.init(
             dsn=v,
+            profiles_sample_rate=1.0,
             traces_sample_rate=1.0,
         )
         return v
