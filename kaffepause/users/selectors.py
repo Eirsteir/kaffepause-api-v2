@@ -24,7 +24,7 @@ def get_user(*, uuid: UUID) -> User:
 
 
 def search_users(*, query: str, searched_by: User) -> Iterable[User]:
-    search_query = Q(name__icontains=query) | Q(username__icontains=query)
+    search_query = Q(name__icontains=query)
 
     return User.nodes.filter(search_query).exclude(uuid=searched_by.uuid).all()
 
