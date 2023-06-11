@@ -48,7 +48,7 @@ class Break(StructuredNode):
 
     def clean(self, *props, **kwargs):
         start_time = self.get("starting_at")
-        print(now(), start_time)
+
         if now() >= start_time or not start_time:
             raise InvalidBreakStartTime
         elif time_from_now(minutes=5) >= start_time:

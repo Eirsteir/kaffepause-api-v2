@@ -1,3 +1,4 @@
+import logging
 from typing import List
 from uuid import UUID
 
@@ -9,6 +10,8 @@ from kaffepause.breaks.models import Break, BreakInvitation
 from kaffepause.common.utils import now
 from kaffepause.groups.enums import GroupRelationship
 from kaffepause.users.models import User
+
+logger = logging.getLogger(__name__)
 
 
 def can_user_edit_break(user: User, break_: Break) -> bool:
@@ -73,9 +76,8 @@ def get_break(actor: User, uuid: UUID) -> Break:
     MATCH
         (b:Break {{uuid: $break_uuid}}),
         (u:User {{uuid: $user_uuid}})
-    WHERE (u)-[:{BreakRelationship.PARTICIPATED_IN}
-                | :{BreakRelationship.INITIATED}]->(b)
-        OR (u)-[:{BreakRelationship.SENT} | :{BreakRelationship.TO_USER}]
+    WHERE (u)-[:{BreakRelationship.PARTICIPATED_IN}|:{BreakRelationship.INITIATED}]->(b)
+        OR (u)-[:{BreakRelationship.SENT}|:{BreakRelationship.TO_USER}]
                 -(:BreakInvitation)-[:{BreakRelationship.REGARDING}]->(b)
         OR (u)<-[:{GroupRelationship.HAS_MEMBER}]
                 -(:Group)-[:{BreakRelationship.TO_GROUP}]
@@ -86,6 +88,7 @@ def get_break(actor: User, uuid: UUID) -> Break:
     results, meta = db.cypher_query(query, params, resolve_objects=True)
 
     if not results:
+        logger.debug(f"Could not find break with uuid: {uuid}, (user: {actor.uuid})")
         raise BreakNotFound
 
     return results[0][0]

@@ -125,7 +125,6 @@ class BreakInvitationConnection(CountableConnection):
 
 class BreaksSectionNode(SectionNode, graphene.ObjectType):
     class Meta:
-        interfaces = (relay.Node,)
         name = "BreaksSection"
 
     items = relay.ConnectionField(BreakConnection)
@@ -133,7 +132,6 @@ class BreaksSectionNode(SectionNode, graphene.ObjectType):
 
 class BreaksPresentationNode(graphene.ObjectType):
     class Meta:
-        interfaces = (relay.Node,)
         name = "BreaksPresentation"
 
     sections = graphene.List(BreaksSectionNode)

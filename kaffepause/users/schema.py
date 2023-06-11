@@ -18,6 +18,7 @@ class UserQuery(graphene.ObjectType):
 
     @login_required
     def resolve_user(self, info, id):
+        print(id)
         return get_user(uuid=id)
 
     @login_required

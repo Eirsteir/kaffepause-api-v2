@@ -17,7 +17,7 @@ def get_user_from_account(*, account: Account) -> User:
 
 def get_user(*, uuid: UUID) -> User:
     try:
-        return User.nodes.get(uuid=uuid)
+        return User.nodes.get(uuid=str(uuid))
     except User.DoesNotExist as e:
         logger.debug(f"Could not find user with uuid: {uuid}", exc_info=e)
         raise UserDoesNotExist from e
