@@ -1,6 +1,8 @@
 # kaffepause-api
 
-This project was generated via [manage-fastapi](https://ycd.github.io/manage-fastapi/)! :tada:
+## Getting started
+
+Run `docker-compose up`
 
 ## License
 
