@@ -31,7 +31,7 @@ jobs:
       with:
         push: true
         tags: kaffepause.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_f7690bcf73044c5f894dc22b144429c8 }}/kaffepause/kaffepause/kaffepause:${{ github.sha }}
-        file: ./Dockerfile
+        file: ./compose/production/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
