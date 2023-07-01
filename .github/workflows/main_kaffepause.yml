@@ -23,15 +23,15 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: https://kaffepause.azurecr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_961f67fb9580412f8e6a7ad06e2f213c }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_608319b994c84406b4ca7b101b1b3252 }}
+        username: ${{ secrets.AzureAppService_ContainerUsername_f7690bcf73044c5f894dc22b144429c8 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_1a7189ac1f164a1cb99efb83858d65a9 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: kaffepause.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_961f67fb9580412f8e6a7ad06e2f213c }}/kaffepause/kaffepause:${{ github.sha }}
-        file: ./compose/production/Dockerfile
+        tags: kaffepause.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_f7690bcf73044c5f894dc22b144429c8 }}/kaffepause/kaffepause/kaffepause:${{ github.sha }}
+        file: ./Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'kaffepause'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_040a2c9edfd64500ae6a1a059cc9b6f8 }}
-        images: 'kaffepause.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_961f67fb9580412f8e6a7ad06e2f213c }}/kaffepause/kaffepause:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_0110b3582a8045bfb10de138911838fc }}
+        images: 'kaffepause.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_f7690bcf73044c5f894dc22b144429c8 }}/kaffepause/kaffepause/kaffepause:${{ github.sha }}'
