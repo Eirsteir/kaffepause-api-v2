@@ -23,9 +23,13 @@ def get_outgoing_requests(
 
 
 def relationship_exists(user, other):
-    """Returns boolean whether or not a relationship of any kind exists between the given users."""
+    """
+    Returns boolean whether or not a relationship
+    of any kind exists between the given users.
+    """
     query = f"""
-    MATCH (user:User)-[:{UserRelationship.ARE_FRIENDS}| {UserRelationship.REQUESTING_FRIENDSHIP}]-(other:User)
+    MATCH (user:User)-[:{UserRelationship.ARE_FRIENDS}|
+        {UserRelationship.REQUESTING_FRIENDSHIP}]-(other:User)
     WHERE user.id = $user_uuid AND other.id = $other_uuid
     RETURN other
     """
@@ -42,7 +46,7 @@ def get_friendship_status(actor: User, user: User) -> object:
     """
     # TODO: Differ between requested direction
     if actor == user:
-        return
+        return None
     # query = f"""
     # MATCH (subject:User {{id: $subject_uuid}})
     # -[r:{UserRelationship.ARE_FRIENDS} | {UserRelationship.REQUESTING_FRIENDSHIP}]
@@ -75,7 +79,9 @@ def get_social_context_between(actor: User, other: User) -> str:
 def get_mutual_friends_count(actor: User, user: User) -> int:
     """Returns the mutual friends for the given users."""
     query = f"""
-    MATCH (subject:User {{id: $subject_uuid}})-[:{UserRelationship.ARE_FRIENDS}]-(n)-[:{UserRelationship.ARE_FRIENDS}]-(person:User {{id: $person_uuid}})
+    MATCH (subject:User {{id: $subject_uuid}})
+    -[:{UserRelationship.ARE_FRIENDS}]-(n)-[:{UserRelationship.ARE_FRIENDS}]
+    -(person:User {{id: $person_uuid}})
     WHERE subject <> n
     RETURN count(n)
     """
@@ -88,29 +94,36 @@ def get_mutual_friends_count(actor: User, user: User) -> int:
 
 def get_friend_recommendations(user, limit=10):
     """
-    Recommends friends for a given user based on the number of mutual friends and shared campus and groups.
+    Recommends friends for a given user
+    based on the number of mutual friends and shared campus and groups.
 
     Args:
         current_user_uuid (str): The UUID of the current user.
 
     Returns:
-        list of tuples: A list of recommended user UUIDs along with their campus and group membership status.
+        list of tuples: A list of recommended user UUIDs
+        along with their campus and group membership status.
 
     Raises:
         Neo4jError: If there was an error executing the query.
     """
     query = """
-        MATCH (u:User {id: $user_uuid})-[:ARE_FRIENDS]-(f:User)-[:ARE_FRIENDS]-(recommended_user:User)
-        WHERE NOT (u)-[:ARE_FRIENDS]-(recommended_user) AND NOT recommended_user.id = $user_uuid
+        MATCH (u:User {id: $user_uuid})-[:ARE_FRIENDS]
+            -(f:User)-[:ARE_FRIENDS]-(recommended_user:User)
+        WHERE NOT (u)-[:ARE_FRIENDS]-(recommended_user)
+            AND NOT recommended_user.id = $user_uuid
         WITH recommended_user, u, COUNT(f) AS mutual_friends
-        OPTIONAL MATCH (u)-[:PREFERRED_LOCATION]->(u_loc:Location)<-[:PREFERRED_LOCATION]-(recommended_user)
+        OPTIONAL MATCH (u)-[:PREFERRED_LOCATION]->
+            (u_loc:Location)<-[:PREFERRED_LOCATION]-(recommended_user)
         WITH recommended_user, u, mutual_friends, u_loc,
              [(recommended_user)-[:ARE_FRIENDS]-(f:User) | f.id] AS friends_uuids,
              [(recommended_user)-[:HAS_MEMBER]-(g:Group) | g.id] AS group_uuids
         ORDER BY mutual_friends DESC
         WITH recommended_user, u, mutual_friends, u_loc, friends_uuids, group_uuids,
-             [loc IN [(recommended_user)-[:PREFERRED_LOCATION]->(loc:Location) | loc] WHERE loc = u_loc | loc] AS same_campus,
-             [(recommended_user)-[:HAS_MEMBER]-(g:Group) WHERE NOT (u)-[:HAS_MEMBER]-(g) | g] AS same_group
+             [loc IN [(recommended_user)-[:PREFERRED_LOCATION]->(loc:Location) | loc]
+                WHERE loc = u_loc | loc] AS same_campus,
+             [(recommended_user)-[:HAS_MEMBER]-(g:Group)
+                WHERE NOT (u)-[:HAS_MEMBER]-(g) | g] AS same_group
         RETURN recommended_user
         //, same_campus, same_group, mutual_friends
         LIMIT $limit
