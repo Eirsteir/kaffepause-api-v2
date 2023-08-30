@@ -26,7 +26,7 @@ def relationship_exists(user, other):
     """Returns boolean whether or not a relationship of any kind exists between the given users."""
     query = f"""
     MATCH (user:User)-[:{UserRelationship.ARE_FRIENDS}| {UserRelationship.REQUESTING_FRIENDSHIP}]-(other:User)
-    WHERE user.uuid = $user_uuid AND other.uuid = $other_uuid
+    WHERE user.id = $user_uuid AND other.id = $other_uuid
     RETURN other
     """
     params = dict(user_uuid=user.uuid, other_uuid=other.uuid)
@@ -44,9 +44,9 @@ def get_friendship_status(actor: User, user: User) -> object:
     if actor == user:
         return
     # query = f"""
-    # MATCH (subject:User {{uuid: $subject_uuid}})
+    # MATCH (subject:User {{id: $subject_uuid}})
     # -[r:{UserRelationship.ARE_FRIENDS} | {UserRelationship.REQUESTING_FRIENDSHIP}]
-    # -(person:User {{uuid: $person_uuid}})
+    # -(person:User {{id: $person_uuid}})
     # return TYPE(r)
     # """
     #
@@ -75,7 +75,7 @@ def get_social_context_between(actor: User, other: User) -> str:
 def get_mutual_friends_count(actor: User, user: User) -> int:
     """Returns the mutual friends for the given users."""
     query = f"""
-    MATCH (subject:User {{uuid: $subject_uuid}})-[:{UserRelationship.ARE_FRIENDS}]-(n)-[:{UserRelationship.ARE_FRIENDS}]-(person:User {{uuid: $person_uuid}})
+    MATCH (subject:User {{id: $subject_uuid}})-[:{UserRelationship.ARE_FRIENDS}]-(n)-[:{UserRelationship.ARE_FRIENDS}]-(person:User {{id: $person_uuid}})
     WHERE subject <> n
     RETURN count(n)
     """
@@ -100,13 +100,13 @@ def get_friend_recommendations(user, limit=10):
         Neo4jError: If there was an error executing the query.
     """
     query = """
-        MATCH (u:User {uuid: $user_uuid})-[:ARE_FRIENDS]-(f:User)-[:ARE_FRIENDS]-(recommended_user:User)
-        WHERE NOT (u)-[:ARE_FRIENDS]-(recommended_user) AND NOT recommended_user.uuid = $user_uuid
+        MATCH (u:User {id: $user_uuid})-[:ARE_FRIENDS]-(f:User)-[:ARE_FRIENDS]-(recommended_user:User)
+        WHERE NOT (u)-[:ARE_FRIENDS]-(recommended_user) AND NOT recommended_user.id = $user_uuid
         WITH recommended_user, u, COUNT(f) AS mutual_friends
         OPTIONAL MATCH (u)-[:PREFERRED_LOCATION]->(u_loc:Location)<-[:PREFERRED_LOCATION]-(recommended_user)
         WITH recommended_user, u, mutual_friends, u_loc,
-             [(recommended_user)-[:ARE_FRIENDS]-(f:User) | f.uuid] AS friends_uuids,
-             [(recommended_user)-[:HAS_MEMBER]-(g:Group) | g.uuid] AS group_uuids
+             [(recommended_user)-[:ARE_FRIENDS]-(f:User) | f.id] AS friends_uuids,
+             [(recommended_user)-[:HAS_MEMBER]-(g:Group) | g.id] AS group_uuids
         ORDER BY mutual_friends DESC
         WITH recommended_user, u, mutual_friends, u_loc, friends_uuids, group_uuids,
              [loc IN [(recommended_user)-[:PREFERRED_LOCATION]->(loc:Location) | loc] WHERE loc = u_loc | loc] AS same_campus,
