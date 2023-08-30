@@ -113,14 +113,10 @@ class User(StructuredNode, BaseUser):
     def add_friend(self, other):
         """Disconnect requesting relationships and connect the users as friends."""
         self.outgoing_friend_requests.disconnect(other)
-        self.following.connect(other)
-        other.following.connect(self)
         return self.friends.connect(other)
 
     def remove_friend(self, friend):  # Returns None if not friends - ok?
         """Disconnect self and friend."""
-        self.following.disconnect(friend)
-        friend.following.disconnect(self)
         return self.friends.disconnect(friend)
 
     def can_perform_action_on_friend(self, friend):
