@@ -1,3 +1,5 @@
+from logging.config import dictConfig
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -7,6 +9,9 @@ from kaffepause.core.database import lifespan
 
 
 def get_application():
+    # Load logging configuration, should be before FastAPI initialization
+    dictConfig(settings.LOGGING_CONFIG.dict())
+
     _app = FastAPI(
         title=settings.PROJECT_NAME,
         lifespan=lifespan,

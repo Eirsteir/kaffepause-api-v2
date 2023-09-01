@@ -3,6 +3,8 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, validator
 
+from kaffepause.core.settings.log_config import LogConfig
+
 
 class AppBaseSettings(BaseSettings):
     PROJECT_NAME: str = "kaffepause"
@@ -19,6 +21,8 @@ class AppBaseSettings(BaseSettings):
         elif isinstance(v, (list, str)):
             return v
         raise ValueError(v)
+
+    LOGGING_CONFIG: LogConfig = LogConfig()
 
     # NEO4J
     # ------------------------------------------------------------------------------
