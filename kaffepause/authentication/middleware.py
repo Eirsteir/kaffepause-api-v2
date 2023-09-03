@@ -3,7 +3,7 @@ from kaffepause.authentication.jwt import get_http_authorization
 
 
 def _authenticate(context):
-    is_anonymous = not hasattr(context, "user") or context["user"].is_anonymous
+    is_anonymous = "user" not in context or context["user"].is_anonymous
     return (
         is_anonymous and get_http_authorization(request=context["request"]) is not None
     )
