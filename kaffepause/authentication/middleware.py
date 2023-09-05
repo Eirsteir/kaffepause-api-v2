@@ -1,5 +1,9 @@
+import logging
+
 from kaffepause.authentication.backend import JSONWebTokenBackend
 from kaffepause.authentication.jwt import get_http_authorization
+
+logger = logging.getLogger(__name__)
 
 
 def _authenticate(context):
@@ -19,7 +23,9 @@ class JSONWebTokenMiddleware:
 
         if _authenticate(context):
             user = self.backend.authenticate(request=request, **kwargs)
+
             if user is not None:
+                logger.debug(f"Successfully authenticated user: {user.email}")
                 context["user"] = user
 
         return next(root, info, **kwargs)

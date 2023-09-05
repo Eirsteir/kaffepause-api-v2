@@ -11,8 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_user_by_natural_key(email):
-    logger.debug(f"Auth: getting user by natural key: {email}")
-
     try:
         return User.nodes.get(email=email)
     except User.DoesNotExist as e:

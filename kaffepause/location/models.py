@@ -9,5 +9,5 @@ class Location(StructuredNode):
     uuid = UUIDProperty()
     title = StringProperty(required=True, index=True, max_length=100)
     type = StringProperty(required=False, max_length=30)
-    item_type = StringProperty(required=False, max_length=30)
+    item_type = StringProperty(required=False, index=True, max_length=30)
     children = RelationshipFrom(LOCATION, LocationRelationship.CHILD_OF)

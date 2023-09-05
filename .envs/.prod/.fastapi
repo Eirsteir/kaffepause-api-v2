@@ -2,6 +2,7 @@ APP_ENV=DEVELOPMENT
 WEBSITE_URL=http://localhost:3000
 BACKEND_CORS_ORIGINS=["http://localhost:3000", "https://localhost:3000", "http://localhost", "https://localhost"]
 
+
 NEO4J_USER=neo4j
 NEO4J_PASSWORD=zzJPvnTkCx4MfUn_dOuQoh2X1eKxXUlvMxpfOwImIOs
 NEO4J_HOST=45c3bbbf.databases.neo4j.io

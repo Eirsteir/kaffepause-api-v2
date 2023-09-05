@@ -12,7 +12,7 @@ from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
 
 try:
-    uri = "neo4j://${NEO4J_HOST}:${NEO4J_PORT}"
+    uri = "neo4j://${NEO4J_HOST}:${NEO4J_PORT}"  # neo4j+s for production
     auth = ("${NEO4J_USER}", "${NEO4J_PASSWORD}")
     driver = GraphDatabase.driver(uri, auth=auth)
     driver.verify_connectivity()

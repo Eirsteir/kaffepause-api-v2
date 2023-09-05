@@ -14,6 +14,7 @@ from kaffepause.breaks.selectors import (
     get_break_history,
     get_next_break,
     get_pending_break_invitations,
+    get_upcoming_breaks,
 )
 from kaffepause.breaks.types import (
     BreakConnection,
@@ -27,6 +28,7 @@ from kaffepause.breaks.types import (
 class Query(graphene.ObjectType):
     breaks_presentation = graphene.Field(BreaksPresentationNode)
     break_invitations_presentation = graphene.Field(BreakInvitationsPresentationNode)
+    upcoming_breaks = relay.ConnectionField(BreakConnection)
     next_break = graphene.Field(BreakNode)
     break_ = graphene.Field(BreakNode, uuid=graphene.UUID())
     pending_break_invitations = relay.ConnectionField(BreakInvitationConnection)
@@ -44,6 +46,11 @@ class Query(graphene.ObjectType):
     def resolve_next_break(self, info, **kwargs):
         current_user = info.context["user"]
         return get_next_break(actor=current_user)
+
+    @login_required
+    def resolve_upcoming_breaks(self, info, **kwargs):
+        current_user = info.context["user"]
+        return get_upcoming_breaks(actor=current_user)
 
     @login_required
     def resolve_break_(self, info, uuid, **kwargs):

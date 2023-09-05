@@ -11,6 +11,7 @@ from kaffepause.relationships.mutations import (
 )
 from kaffepause.relationships.selectors import (
     get_friend_recommendations,
+    get_friends,
     get_incoming_requests,
     get_outgoing_requests,
 )
@@ -21,6 +22,7 @@ class Query(graphene.ObjectType):
     friending_possibilities = relay.ConnectionField(UserConnection)
     outgoing_friend_requests = relay.ConnectionField(UserConnection)
     friend_recommendations = relay.ConnectionField(UserConnection)
+    friends = relay.ConnectionField(UserConnection)
 
     @login_required
     def resolve_friending_possibilities(self, info, **kwargs):
@@ -36,6 +38,11 @@ class Query(graphene.ObjectType):
     def resolve_friend_recommendations(self, info, **kwargs):
         user = info.context["user"]
         return get_friend_recommendations(user, limit=10)
+
+    @login_required
+    def resolve_friends(self, info, **kwargs):
+        user = info.context["user"]
+        return get_friends(user)
 
 
 class Mutation(graphene.ObjectType):

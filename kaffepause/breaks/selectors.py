@@ -66,6 +66,11 @@ def get_next_break(actor: User) -> Break:
     return actor.breaks.filter(starting_at__gt=now()).first_or_none()
 
 
+def get_upcoming_breaks(actor: User) -> Break:
+    """Return the next break in time where actor is a participant."""
+    return actor.breaks.filter(starting_at__gt=now())
+
+
 def get_break(actor: User, uuid: UUID) -> Break:
     """
     Return the break if actor has participated
@@ -142,17 +147,14 @@ def get_expired_break_invitations(actor: User) -> List[BreakInvitation]:
 
 def _get_unanswered_invitations_query() -> str:
     query = f"""
-    MATCH (invitation:BreakInvitation)-[:{BreakRelationship.REGARDING}]->(break_:Break),
-        (user:User {{id: $user_uuid}})
-    WHERE NOT (user)-[:{BreakRelationship.ACCEPTED}
-                        | {BreakRelationship.DECLINED}
-                        | {BreakRelationship.IGNORED}]
-                    ->(invitation)
-        AND (
-            (invitation)-[:{BreakRelationship.TO_USER}]->(user)
-            OR (invitation)-[:{BreakRelationship.TO_GROUP}]
-            ->(:Group)-[:{GroupRelationship.HAS_MEMBER}]->(user)
-        )
+    MATCH (invitation:BreakInvitation)-[:{BreakRelationship.REGARDING}]->(break_:Break)
+    MATCH (u:User {{id: $user_uuid}})
+    WHERE NOT (u)-[:{BreakRelationship.ACCEPTED}
+        | {BreakRelationship.DECLINED}
+        | {BreakRelationship.IGNORED}]->(invitation)
+      AND ((invitation)-[:{BreakRelationship.TO_USER}]->(u)
+        OR (invitation)-[:{BreakRelationship.TO_GROUP}]
+            ->(:Group)-[:{GroupRelationship.HAS_MEMBER}]->(u))
     """
     return query
 
@@ -167,10 +169,6 @@ def _run_break_invitation_query(query: str, actor: User) -> List[BreakInvitation
     results, meta = db.cypher_query(query, params=params)
     breaks = [BreakInvitation.inflate(row[0]) for row in results]
     return breaks
-
-
-def get_upcoming_breaks(actor: User) -> List[Break]:
-    return actor.breaks.filter(starting_at__gt=now())
 
 
 def get_break_history(actor: User) -> List[Break]:

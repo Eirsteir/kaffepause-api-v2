@@ -13,7 +13,7 @@ class Settings(AppBaseSettings):
         if isinstance(v, str):
             return v
         return (
-            f"neo4j://{values.get('NEO4J_USER')}:{values.get('NEO4J_PASSWORD')}"
+            f"neo4j+s://{values.get('NEO4J_USER')}:{values.get('NEO4J_PASSWORD')}"
             f"@{values.get('NEO4J_HOST')}:{values.get('NEO4J_PORT')}"
         )
 
